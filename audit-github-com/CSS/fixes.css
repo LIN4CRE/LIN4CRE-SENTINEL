@@ -1,0 +1,45 @@
+/* Proposed accessibility patch. Integrate after existing styles; inspect overrides before merge. */
+:root {
+  --text-muted: #a1ada5;       /* was ~#728078 in some microcopy contexts; use local token mapping carefully */
+  --text-footer: #9aa79e;      /* raises contrast on #0a0f0e */
+  --text-nav-section: #9aa79e;
+  --text-placeholder: #98a59c;
+}
+
+/* A readable baseline. Replace ad-hoc micro-label declarations with semantic tokens over time. */
+body { font-size: 15px; line-height: 1.55; }
+small, .eyebrow, .nav-section, .app-footer, .field-hint, .table-meta, .status-caption { font-size: max(12px, 0.75rem); }
+input::placeholder, textarea::placeholder { color: var(--text-placeholder); opacity: 1; }
+.nav-section { color: var(--text-nav-section); }
+.app-footer { color: var(--text-footer); }
+
+/* Focus must remain visible on dark panels and in forced-colors mode. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid #b7ef72;
+  outline-offset: 3px;
+}
+@media (forced-colors: active) {
+  :where(a, button, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid Highlight; }
+  .badge, .button { border: 1px solid ButtonText; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* WCAG 2.2 AA minimum target. Keep layout stable with padding/min-inline-size. */
+.icon-button, .operation-expand, .toast button, .approval-bell, .mobile-menu-button {
+  min-width: 24px; min-height: 24px;
+}
+.button, .nav-item, .filter-tabs button { min-height: 36px; }
+@media (pointer: coarse) {
+  .icon-button, .operation-expand, .toast button, .approval-bell, .mobile-menu-button { min-width: 44px; min-height: 44px; }
+}
+
+.skip-link { position: fixed; z-index: 10000; top: 8px; left: 8px; transform: translateY(-160%); padding: 12px 16px; background: #f2f7f3; color: #101713; border-radius: 8px; font-size: 16px; }
+.skip-link:focus { transform: translateY(0); }

@@ -1,0 +1,3 @@
+# Local app variant: do not index local operational UI or user data.
+User-agent: *
+Disallow: /
