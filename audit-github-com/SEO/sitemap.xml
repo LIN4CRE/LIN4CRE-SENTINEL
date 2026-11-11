@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEMPLATE ONLY: replace sentinel.example.org and include only live, canonical public URLs. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://sentinel.example.org/</loc></url>
+  <url><loc>https://sentinel.example.org/features/</loc></url>
+  <url><loc>https://sentinel.example.org/how-it-works/</loc></url>
+  <url><loc>https://sentinel.example.org/downloads/</loc></url>
+  <url><loc>https://sentinel.example.org/docs/</loc></url>
+  <url><loc>https://sentinel.example.org/security/</loc></url>
+  <url><loc>https://sentinel.example.org/accessibility/</loc></url>
+  <url><loc>https://sentinel.example.org/support/</loc></url>
+  <url><loc>https://sentinel.example.org/changelog/</loc></url>
+</urlset>

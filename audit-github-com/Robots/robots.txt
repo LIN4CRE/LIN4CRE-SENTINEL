@@ -1,0 +1,8 @@
+# PUBLIC MARKETING / DOCUMENTATION SITE ONLY
+# Replace the example origin and publish only after confirming the sitemap URL.
+User-agent: *
+Allow: /
+Disallow: /preview/
+Disallow: /admin/
+
+Sitemap: https://sentinel.example.org/sitemap.xml
