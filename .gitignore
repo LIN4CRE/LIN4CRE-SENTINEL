@@ -19,3 +19,7 @@ logs/
 *.tsbuildinfo
 public/downloads/*.zip
 .DS_Store
+# Android / Gradle outputs
+android/.gradle/
+android/local.properties
+android/**/build/

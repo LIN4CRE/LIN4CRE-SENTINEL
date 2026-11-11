@@ -1,0 +1,44 @@
+name: Android Companion CI
+
+on:
+  pull_request:
+    paths:
+      - 'android/**'
+      - 'backend/mobile_*.py'
+      - 'backend/mobile*.py'
+      - 'tests/test_upgrade.py'
+      - '.github/workflows/android-ci.yml'
+      - '.github/workflows/android-release.yml'
+  push:
+    paths:
+      - 'android/**'
+      - 'backend/mobile_*.py'
+      - 'backend/mobile*.py'
+      - 'tests/test_upgrade.py'
+      - '.github/workflows/android-ci.yml'
+      - '.github/workflows/android-release.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  android-debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew --no-daemon assembleDebug
+      - name: Upload preview build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentinel-android-preview
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14

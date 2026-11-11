@@ -28,6 +28,15 @@ Include the affected version/commit, impact, reproduction conditions, and whethe
 - Used operation IDs are rejected; unreadable replay state fails closed.
 - Only registered actions are accepted. There is no arbitrary shell, PowerShell, Python, command or path parameter.
 
+### Android companion (preview)
+
+- The Android app is a read-only client; it cannot execute testing, change settings, approve scope, operate the host companion, restore data or submit reports.
+- It connects to a separate ASGI app (`backend.mobile_main`) that exposes only authenticated read-only endpoints. Do not expose `backend.main:app` to a phone or network.
+- The mobile API binds to loopback by default in the documented command. Remote access must use a private VPN or a properly configured HTTPS ingress with firewall restrictions; do not send bearer tokens over plain HTTP.
+- Pairing stores only a SHA-256 token digest on the server; the client encrypts the bearer token using Android Keystore. Revoke by running `python -m backend.mobile_pairing --rotate` and replacing the token in the app.
+- Mobile API responses include private programme names, scope approvals and paid totals. Treat the bearer token as sensitive and grant access only to trusted devices.
+- The GitHub preview APK is debug-signed, not production-signed. Do not rely on it for a stable authenticated production distribution.
+
 ### Install, update and code changes
 
 - Installation/update plans originate from actual inspection and registered component metadata.
