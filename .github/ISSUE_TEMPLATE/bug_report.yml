@@ -1,0 +1,38 @@
+name: Bug report
+description: Report reproducible incorrect behaviour without sensitive research data
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Do not include credentials, tokens, private programme scope, vulnerability evidence, earnings or personal data. Use private vulnerability reporting for security issues.
+  - type: input
+    id: version
+    attributes:
+      label: SENTINEL version or commit
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options: [Windows 11, Windows 10, Linux, Docker, Other]
+    validations:
+      required: true
+  - type: textarea
+    id: behaviour
+    attributes:
+      label: Actual and expected behaviour
+      description: Include the actual operation status and verification result. Do not replace failures with assumed success.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Redacted logs or installation-report excerpt
+      description: Remove paths/usernames if sensitive, all tokens, keys and private research content.

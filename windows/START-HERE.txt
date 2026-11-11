@@ -1,0 +1,18 @@
+LIN4CRE SENTINEL — WINDOWS SETUP
+================================
+
+1. Extract this entire ZIP into a folder you want to keep. Do not run from inside the ZIP.
+2. Double-click windows\SentinelSetup.cmd.
+3. If Windows SmartScreen appears, inspect the publisher/source and proceed only if you trust this package. This unsigned source package has no purchased code-signing certificate.
+4. If Python is missing, the native setup window explains the official Python package and asks before installing it.
+5. Select “Inspect this PC”. Inspection is read-only.
+6. Choose only the components you want. Review the exact operation before approving it.
+7. Use “Save installation report” to keep the actual results, including failures and unavailable checks.
+
+No terminal commands are required. SENTINEL does not silently uninstall applications, delete models, expand security-testing scope or submit reports.
+
+The local web console opens at http://127.0.0.1:8000 after setup.
+The host companion binds to 127.0.0.1:8765 and requires a locally stored token.
+
+Credentials, evidence, reports, earnings and recovery points are not included in this setup archive.
+Ollama model weights are not included. Model updates require a separate verified model backup and remain review-only in this release.
