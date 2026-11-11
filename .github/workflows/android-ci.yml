@@ -7,6 +7,9 @@ on:
       - 'backend/mobile_*.py'
       - 'backend/mobile*.py'
       - 'tests/test_upgrade.py'
+      - 'docs/ANDROID.md'
+      - 'README.md'
+      - 'SECURITY.md'
       - '.github/workflows/android-ci.yml'
       - '.github/workflows/android-release.yml'
   push:
@@ -15,6 +18,9 @@ on:
       - 'backend/mobile_*.py'
       - 'backend/mobile*.py'
       - 'tests/test_upgrade.py'
+      - 'docs/ANDROID.md'
+      - 'README.md'
+      - 'SECURITY.md'
       - '.github/workflows/android-ci.yml'
       - '.github/workflows/android-release.yml'
 

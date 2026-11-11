@@ -48,11 +48,13 @@ Use the same data directory for pairing and for the mobile API process. Limit in
 
 ## 3. Install and pair the APK
 
-1. Download **`SENTINEL-Android-Companion-preview.apk`** from the Android preview GitHub Release.
+1. After the GitHub prerelease is published, download **`SENTINEL-Android-Companion-preview.apk`** from its assets.
 2. Verify its SHA-256 using the adjacent `.sha256` file (for example, `sha256sum -c SENTINEL-Android-Companion-preview.apk.sha256`).
 3. Install the APK; Android may ask you to allow installation from the selected source.
 4. Enter your HTTPS origin (for example `https://sentinel.example.net`) and the one-time pairing token.
 5. Tap **Save securely and connect**. The token is encrypted using an Android Keystore AES-GCM key and is not displayed again.
+
+The first preview APK is **not yet available**. The PR adds CI/release automation, but the repository's GitHub Actions job was blocked before starting because the GitHub account is locked due to a billing issue. Once Actions billing is restored and this branch is merged, run **Publish Android Companion Preview** with tag `android-v0.1.0-preview.1` to build and attach the APK plus checksum.
 
 The current GitHub APK is a **preview build signed with the ephemeral Android debug key from CI**, not a production signing identity. It is suitable for evaluation, but future preview builds may require uninstalling the previous build before installing the new one. Do not treat this APK as a verified production release. Production signing requires a stable private signing key managed outside source control (for example in protected GitHub Actions secrets) and a documented rotation/recovery plan.
 

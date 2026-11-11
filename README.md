@@ -24,7 +24,7 @@ The graphical manager starts only loopback services, pairs the host companion, c
 
 ## Android companion (preview)
 
-A read-only Android companion is available as a preview APK from [GitHub Releases](https://github.com/LIN4CRE/LIN4CRE-SENTINEL/releases). It connects to a separately run, authenticated mobile API over HTTPS and can display dashboard counts, programme records and scope approvals. It cannot approve scope, run tests, modify data or operate the Windows host.
+A read-only Android companion is in preview development. Its APK will be published as a GitHub prerelease after the Android build workflow is able to run. It connects to a separately run, authenticated mobile API over HTTPS and can display dashboard counts, programme records and scope approvals. It cannot approve scope, run tests, modify data or operate the Windows host.
 
 See [Android setup and security](docs/ANDROID.md). Do not expose the core API or send a bearer token over plain HTTP.
 

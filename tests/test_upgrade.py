@@ -258,10 +258,6 @@ class UpgradeAcceptanceTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn('verified local Ollama model', response.json()['detail'])
 
 
-if __name__ == '__main__':
-    unittest.main()
-
-
 class MobileCompanionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -299,3 +295,30 @@ class MobileCompanionTests(unittest.TestCase):
             self.assertNotIn('assets_json', row)
         approvals = self.client.get('/api/mobile/v1/approvals', headers=headers)
         self.assertEqual(approvals.status_code, 200)
+
+    def test_pairing_cli_stores_only_digest_and_requires_explicit_rotation(self):
+        import contextlib
+        import io
+        import sys
+        from unittest.mock import patch
+        from backend import mobile_pairing
+
+        with tempfile.TemporaryDirectory() as folder:
+            token_file = Path(folder) / 'token.sha256'
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with patch.object(mobile_pairing, 'TOKEN_HASH_FILE', token_file), patch.object(sys, 'argv', ['mobile_pairing']):
+                with contextlib.redirect_stdout(stdout):
+                    mobile_pairing.main()
+                token = stdout.getvalue().splitlines()[1]
+                digest = token_file.read_text(encoding='ascii').strip()
+                self.assertEqual(digest, hashlib.sha256(token.encode()).hexdigest())
+                self.assertNotIn(token, token_file.read_text(encoding='ascii'))
+                with contextlib.redirect_stderr(stderr), self.assertRaises(SystemExit):
+                    mobile_pairing.main()
+                with patch.object(sys, 'argv', ['mobile_pairing', '--rotate']), contextlib.redirect_stdout(io.StringIO()):
+                    mobile_pairing.main()
+                self.assertNotEqual(token_file.read_text(encoding='ascii').strip(), digest)
+
+
+if __name__ == '__main__':
+    unittest.main()
