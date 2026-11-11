@@ -16,7 +16,8 @@ os.environ['SENTINEL_DISABLE_MONITOR'] = '1'
 
 from fastapi.testclient import TestClient
 from backend.main import app
-from backend import operations, recovery
+from backend.mobile_main import app as mobile_app
+from backend import mobile_auth, operations, recovery
 from backend.db import connect, settings, transaction, utcnow
 from backend.operation_security import authorisation, plan_hash, verify_authorisation
 from host_companion import server
@@ -255,6 +256,68 @@ class UpgradeAcceptanceTests(unittest.IsolatedAsyncioTestCase):
         response = self.client.post('/api/assistant/message', json={'text': 'Make a code change to the assistant colour'})
         self.assertEqual(response.status_code, 409)
         self.assertIn('verified local Ollama model', response.json()['detail'])
+
+
+class MobileCompanionTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.client = TestClient(mobile_app)
+        cls.client.__enter__()
+        cls.original_token_path = mobile_auth.TOKEN_HASH_FILE
+        cls.token_path = Path(TEMP.name) / 'mobile-token.sha256'
+        mobile_auth.TOKEN_HASH_FILE = cls.token_path
+        cls.token = 'mobile-test-token-32-characters-minimum-123456789'
+        cls.token_path.write_text(hashlib.sha256(cls.token.encode()).hexdigest(), encoding='ascii')
+
+    @classmethod
+    def tearDownClass(cls):
+        mobile_auth.TOKEN_HASH_FILE = cls.original_token_path
+        cls.client.__exit__(None, None, None)
+
+    def test_mobile_api_requires_token_and_does_not_expose_core_routes(self):
+        self.assertEqual(self.client.get('/api/mobile/v1/overview').status_code, 401)
+        self.assertEqual(self.client.get('/api/mobile/v1/overview', headers={'Authorization': 'Bearer wrong'}).status_code, 401)
+        self.assertEqual(self.client.post('/api/mobile/v1/programmes', headers={'Authorization': f'Bearer {self.token}'}).status_code, 404)
+        response = self.client.get('/api/mobile/v1/overview', headers={'Authorization': f'Bearer {self.token}'})
+        self.assertEqual(response.status_code, 200, response.text)
+        self.assertTrue(response.json()['read_only'])
+        self.assertEqual(response.headers.get('cache-control'), 'no-store')
+
+    def test_mobile_api_returns_only_safe_read_models(self):
+        headers = {'Authorization': f'Bearer {self.token}'}
+        overview = self.client.get('/api/mobile/v1/overview', headers=headers)
+        self.assertEqual(overview.status_code, 200)
+        self.assertIn('counts', overview.json())
+        programmes = self.client.get('/api/mobile/v1/programmes', headers=headers)
+        self.assertEqual(programmes.status_code, 200)
+        for row in programmes.json():
+            self.assertNotIn('notes', row)
+            self.assertNotIn('assets_json', row)
+        approvals = self.client.get('/api/mobile/v1/approvals', headers=headers)
+        self.assertEqual(approvals.status_code, 200)
+
+    def test_pairing_cli_stores_only_digest_and_requires_explicit_rotation(self):
+        import contextlib
+        import io
+        import sys
+        from unittest.mock import patch
+        from backend import mobile_pairing
+
+        with tempfile.TemporaryDirectory() as folder:
+            token_file = Path(folder) / 'token.sha256'
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with patch.object(mobile_pairing, 'TOKEN_HASH_FILE', token_file), patch.object(sys, 'argv', ['mobile_pairing']):
+                with contextlib.redirect_stdout(stdout):
+                    mobile_pairing.main()
+                token = stdout.getvalue().splitlines()[1]
+                digest = token_file.read_text(encoding='ascii').strip()
+                self.assertEqual(digest, hashlib.sha256(token.encode()).hexdigest())
+                self.assertNotIn(token, token_file.read_text(encoding='ascii'))
+                with contextlib.redirect_stderr(stderr), self.assertRaises(SystemExit):
+                    mobile_pairing.main()
+                with patch.object(sys, 'argv', ['mobile_pairing', '--rotate']), contextlib.redirect_stdout(io.StringIO()):
+                    mobile_pairing.main()
+                self.assertNotEqual(token_file.read_text(encoding='ascii').strip(), digest)
 
 
 if __name__ == '__main__':
