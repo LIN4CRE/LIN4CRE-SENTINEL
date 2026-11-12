@@ -1,6 +1,21 @@
 # Verification record — updated 12 November 2026
 
-## Latest sandbox verification — 12 November 2026
+## Latest Windows 11 verification — 12 November 2026 (release 0.2.2)
+
+- Host: Windows 11, Python 3.12.10, Node.js 26.7.0, npm 11.19.0, Git for Windows 2.48.1, Ollama 0.40.16.
+- `python -m unittest discover -s tests`: **24/24 passed**.
+- `python -m compileall -q backend host_companion windows`: **passed**.
+- `npm run build`: **passed**; the production frontend was built and the Windows setup archive rebuilt (2,634,997 bytes, 65 entries, no database, no nested executable).
+- `scripts/build-setup-exe.py`: **passed**; the standalone one-click setup executable was rebuilt (11,882,384 bytes).
+- **One-click setup verified repeatedly.** `LIN4CRE-SENTINEL-Setup.exe` located the existing installation, located the interpreter through the registry, started the core service (`127.0.0.1:8000`) and the host companion (`127.0.0.1:8765`), completed a read-only inspection, rendered the inspection summary and opened the console. No manual step and no error dialog was produced across repeated runs.
+- **Fresh-machine path verified.** The published `v0.2.2` archive was downloaded from the release URL, extracted into an empty folder, and the setup manager started both services from it; `/api/health` and `/v1/status` both reported version `0.2.2` and `operational`.
+- **Published assets verified by re-download.** The SHA-256 of both release assets matched the values recorded in the release notes exactly.
+- Inspection on this PC reported SENTINEL core, Python, Ollama, Node.js, npm and Git as `healthy`; Docker Desktop/Engine/Compose as `missing` and WSL2 as `unhealthy` because hardware virtualization is not enabled in the BIOS. Setup offered Docker Desktop for review and installed nothing.
+- The existing verified recovery point `20261112-7b6b0814fcf4` survived the upgrade and remained `verified`.
+- Chromium QA was **not rerun** as an automated run: there is no local Chromium/Playwright harness. The console was opened and inspected manually in Chrome at `127.0.0.1:8000`.
+- The Android APK is still **not built**: no JDK or Android SDK is available. GitHub CI for `main` still fails before any job step because the account is locked for billing, which is unrelated to this code.
+
+## Prior sandbox verification — 12 November 2026
 
 - `.venv/bin/python -m unittest discover -s tests -v`: **24/24 passed** (3 mobile companion, 16 upgrade/security/recovery, 5 workflow/scoring).
 - `.venv/bin/python -m compileall -q backend host_companion windows`: **passed**.
