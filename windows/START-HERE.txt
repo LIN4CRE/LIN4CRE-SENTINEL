@@ -1,9 +1,13 @@
 LIN4CRE SENTINEL — WINDOWS SETUP
 ================================
 
-EASIEST: download LIN4CRE-SENTINEL-Setup.exe from the release and double-click it.
+EASIEST: download LIN4CRE-SENTINEL-Setup.cmd from the release and double-click it.
 It finds this installation, downloads it if it is missing, locates Python and opens
 the setup manager for you.
+
+LIN4CRE-SENTINEL-Setup.exe does the same thing as one application file. Windows Smart
+App Control can block a newly published unsigned executable; use the .cmd launcher if
+that happens.
 
 MANUAL (this ZIP):
 1. Extract this entire ZIP into a folder you want to keep. Do not run from inside the ZIP.

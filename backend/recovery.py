@@ -11,7 +11,7 @@ from typing import Any
 
 from .db import BACKUP_DIR, DATA_DIR, DB_PATH, ROOT, audit, connect, decode, decode_many, transaction, utcnow
 
-VERSION = "0.2.3"
+VERSION = "0.2.4"
 NON_SECRET_CONFIG = ("opencode.json", "opencode.jsonc", "AGENTS.md")
 DATA_FOLDERS = ("evidence", "reports", "research", "logs", "scope-rules", "agents", "intelligence")
 
