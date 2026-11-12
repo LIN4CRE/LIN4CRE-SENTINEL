@@ -1,11 +1,16 @@
 LIN4CRE SENTINEL — WINDOWS SETUP
 ================================
 
+EASIEST: download LIN4CRE-SENTINEL-Setup.exe from the release and double-click it.
+It finds this installation, downloads it if it is missing, locates Python and opens
+the setup manager for you.
+
+MANUAL (this ZIP):
 1. Extract this entire ZIP into a folder you want to keep. Do not run from inside the ZIP.
 2. Double-click windows\SentinelSetup.cmd.
 3. If Windows SmartScreen appears, inspect the publisher/source and proceed only if you trust this package. This unsigned source package has no purchased code-signing certificate.
 4. If Python is missing, the native setup window explains the official Python package and asks before installing it.
-5. Select “Inspect this PC”. Inspection is read-only.
+5. The read-only PC inspection runs by itself as soon as the local services are ready.
 6. Choose only the components you want. Review the exact operation before approving it.
 7. Use “Save installation report” to keep the actual results, including failures and unavailable checks.
 

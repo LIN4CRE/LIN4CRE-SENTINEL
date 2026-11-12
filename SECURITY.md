@@ -2,7 +2,7 @@
 
 ## Supported version
 
-Security fixes are applied to the current `main` branch. SENTINEL 0.2.1 is an early local-operations release; core Windows behaviour is validated on Windows 11, while optional Docker/WSL2 administration still depends on the target PC's firmware and administrator access.
+Security fixes are applied to the current `main` branch. SENTINEL 0.2.2 is an early local-operations release; core Windows behaviour is validated on Windows 11, while optional Docker/WSL2 administration still depends on the target PC's firmware and administrator access.
 
 ## Report a vulnerability
 

@@ -39,7 +39,7 @@ def overview() -> dict[str, Any]:
         paid = [dict(row) for row in conn.execute(
             "SELECT currency, ROUND(SUM(amount),2) AS amount FROM payments WHERE status='paid' GROUP BY currency ORDER BY currency"
         ).fetchall()]
-    return {"status": "operational", "version": "0.2.1", "read_only": True, "counts": counts, "paid": paid}
+    return {"status": "operational", "version": "0.2.2", "read_only": True, "counts": counts, "paid": paid}
 
 
 @router.get("/programmes")

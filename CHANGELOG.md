@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.2.2 — 2026-11-12
+
+### Added
+
+- A single-file `LIN4CRE-SENTINEL-Setup.exe` that sets SENTINEL up with one double-click. It finds an existing installation, otherwise downloads and installs the official release archive, locates a real Python interpreter and opens the graphical setup manager.
+- Automatic interpreter discovery through the Windows registry and the standard per-user and machine-wide install folders, ignoring the Microsoft Store alias stub.
+- The setup manager now shows an inspection summary instead of the placeholder text, and opens the operations console when it starts the private local services.
+- A reproducible build script for the standalone setup executable.
+
+### Fixed
+
+- The setup launcher no longer treats an already installed Python as missing, and no longer offers to install a second interpreter.
+- The setup manager resolves the application folder from the launcher instead of assuming it sits next to the script.
+- The Windows setup archive no longer embeds the setup executable.
+
+### Verification
+
+24/24 isolated tests pass. The production frontend build, the Windows setup archive and the standalone setup executable were rebuilt. The one-click executable was launched repeatedly on Windows 11: it located the installation, started the core and host-companion services, completed a read-only inspection and opened the console with no manual step.
+
 ## 0.2.1 — 2026-11-12
 
 ### Fixed

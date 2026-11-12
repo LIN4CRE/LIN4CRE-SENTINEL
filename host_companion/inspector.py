@@ -281,7 +281,7 @@ def core_components() -> list[dict[str, Any]]:
     core = base_component("sentinel_core")
     root = Path(__file__).resolve().parent.parent
     core["location"] = str(root)
-    core["installed_version"] = "0.2.1"
+    core["installed_version"] = "0.2.2"
     core["functional"] = (root / "backend" / "main.py").exists() and (root / "dist" / "index.html").exists()
     core["status"] = "healthy" if core["functional"] else "verification_failed"
     if not core["functional"]:

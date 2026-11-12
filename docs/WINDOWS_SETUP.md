@@ -6,14 +6,23 @@ This path is for users who do not want to write PowerShell, Python, JavaScript, 
 
 ## Clean setup
 
+### One click (recommended)
+
+1. Obtain `LIN4CRE-SENTINEL-Setup.exe` from the project release.
+2. Double-click it.
+
+The launcher finds an existing SENTINEL installation, or downloads and installs the official release archive into `%LOCALAPPDATA%\LIN4CRE\SENTINEL\app`. It then locates a real Python interpreter — including one that is installed but not on `PATH` — and opens the setup manager. The setup manager starts the private local services, runs a read-only inspection of this PC and opens the operations console at `http://127.0.0.1:8000`. Nothing is installed or changed without your approval.
+
+### Manual (source package)
+
 1. Obtain the complete `LIN4CRE-SENTINEL-Windows-Setup.zip` from the project release or **Maintenance → Download Windows setup**.
 2. Back up any existing SENTINEL installation before extracting over it. Prefer a new folder for a first installation.
 3. Extract the archive fully into a permanent folder.
 4. Double-click `windows/SentinelSetup.cmd`.
 5. Review any Windows SmartScreen/UAC prompt. This source release is unsigned; UAC should appear only when a selected vendor installer requires elevation.
-6. If Python is absent, the native bootstrap explains the official `Python.Python.3.12` WinGet package. Nothing installs until you select **Install Python & continue**. Close and reopen setup afterwards so detection is fresh.
+6. If Python is absent, the native bootstrap explains the official `Python.Python.3.12` WinGet package. Nothing installs until you select **Install Python & continue**, and setup continues by itself afterwards.
 7. If local runtime packages are absent, the graphical manager displays the missing packages and asks before using `requirements.txt`.
-8. Wait for the private local services, then select **Inspect this PC**.
+8. Wait for the private local services, then select **Inspect this PC**. The inspection also runs automatically as soon as the services are ready.
 
 The setup manager starts the host companion and core using the same local pairing token. An existing valid pairing is preserved rather than silently replaced.
 

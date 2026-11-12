@@ -24,7 +24,17 @@ from tkinter import filedialog, messagebox, ttk
 
 APP_NAME = 'LIN4CRE SENTINEL'
 HERE = Path(__file__).resolve().parent
-PROJECT = HERE.parent
+
+
+def resolve_project() -> Path:
+    """Locate the application folder that owns this setup manager."""
+    env = os.environ.get('SENTINEL_PROJECT_DIR', '').strip()
+    if env and (Path(env) / 'windows' / 'SentinelSetup.pyw').is_file():
+        return Path(env)
+    return HERE.parent
+
+
+PROJECT = resolve_project()
 HOST_PORT = 8765
 API_PORT = 8000
 BG = '#0d1511'
@@ -75,6 +85,8 @@ class SetupWindow(tk.Tk):
         self.selected: dict[str, tk.BooleanVar] = {}
         self.operation: dict = {}
         self.busy = False
+        self.console_opened = False
+        self.started_services = False
         self.report_path = PROJECT / 'data' / 'installation-report.json'
         self._style()
         self._build()
@@ -204,6 +216,7 @@ class SetupWindow(tk.Tk):
                 elif kind == 'services':
                     self.status.configure(text='Private local services are ready. Start with a read-only PC inspection.')
                     self.scan()
+                    self.open_console()
                 elif kind == 'stopped':
                     self.status.configure(text='Emergency stop activated. Active operations were asked to stop and testing permissions revoked.')
                 else:
@@ -212,12 +225,27 @@ class SetupWindow(tk.Tk):
             pass
         self.after(100, self.process_events)
 
+    def open_console(self) -> None:
+        """Show the operations console in the default browser once the services are up."""
+        if self.console_opened or not self.started_services:
+            return
+        self.console_opened = True
+        try:
+            webbrowser.open(f'http://127.0.0.1:{API_PORT}/')
+        except Exception:
+            pass
+
     def prepare_local_services(self) -> None:
         import importlib.util
         missing = [name for name in ('fastapi', 'uvicorn', 'httpx', 'pydantic', 'psutil') if importlib.util.find_spec(name) is None]
         if missing:
-            explanation = 'SENTINEL needs its declared local Python packages (' + ', '.join(missing) + ').\n\nInstall them from requirements.txt now? This uses pip and may download free/open-source packages. No third-party AI subscription is included.'
-            if not messagebox.askyesno('Authorise local runtime installation', explanation, parent=self):
+            explanation = (
+                'SENTINEL needs its declared local Python packages (' + ', '.join(missing) + ').\n\n'
+                'They are free and open-source and are installed from the official package index with pip.\n'
+                'No third-party AI subscription is included and nothing else is changed.\n\n'
+                'Install them now and continue?'
+            )
+            if not messagebox.askyesno('Install the local runtime', explanation, parent=self, default='yes'):
                 self.status.configure(text='Setup is waiting. Local runtime packages were not installed; no service health is assumed.')
                 return
             def install_runtime():
@@ -239,6 +267,7 @@ class SetupWindow(tk.Tk):
     def _start_services(self) -> None:
         config_dir = Path(os.environ.get('LOCALAPPDATA', str(PROJECT / 'data'))) / 'LIN4CRE' / 'SENTINEL'
         config_dir.mkdir(parents=True, exist_ok=True)
+        already_running = self._alive(HOST_PORT) or self._alive(API_PORT)
         token_file = config_dir / 'companion-token.txt'
         if token_file.exists():
             token = token_file.read_text(encoding='utf-8').strip()
@@ -282,6 +311,7 @@ class SetupWindow(tk.Tk):
         deadline = time.time() + 35
         while time.time() < deadline:
             if self._alive(HOST_PORT) and self._alive(API_PORT):
+                self.started_services = not already_running
                 return True
             if any(process.poll() not in (None, 0) for process in self.processes):
                 raise RuntimeError(f'A local service stopped during startup. Read the logs in {logs}. No installation success is assumed.')
@@ -323,6 +353,37 @@ class SetupWindow(tk.Tk):
         if not self.selected:
             ttk.Label(self.choices, text='No supported missing or unhealthy components were detected. No Data Available for other installers.', style='PanelMuted.TLabel', wraplength=235).pack(anchor='w')
         self.install_button.configure(state='normal' if self.selected else 'disabled')
+        self.show_summary()
+
+    def show_summary(self) -> None:
+        """Replace the placeholder text with a short summary of the inspection."""
+        platform = self.inspection.get('platform', {})
+        hardware = self.inspection.get('hardware', {})
+        counts: dict[str, int] = {}
+        for item in self.components.values():
+            status = item.get('status') or 'unknown'
+            counts[status] = counts.get(status, 0) + 1
+        lines = [
+            f"Inspected {self.inspection.get('generated_at', 'this PC')}",
+            f"{platform.get('system', '')} {platform.get('release', '')} · {platform.get('architecture', '')} · Python {platform.get('python', '')}",
+        ]
+        cpu = hardware.get('cpu') or {}
+        memory = hardware.get('ram') or {}
+        processor = cpu.get('processor') or cpu.get('architecture') or ''
+        if processor:
+            lines.append(f"CPU: {processor} ({cpu.get('logical_cores', '?')} logical cores)")
+        if memory.get('total_bytes'):
+            lines.append(f"Memory: {round(memory['total_bytes'] / (1024 ** 3), 1)} GB")
+        lines.append('')
+        lines.append('Verified state: ' + ', '.join(f'{key} {value}' for key, value in sorted(counts.items())))
+        attention = [item['name'] for item in self.components.values() if item.get('status') in ('missing', 'unhealthy', 'outdated')]
+        lines.append('')
+        lines.append('Needs attention: ' + (', '.join(attention) if attention else 'nothing'))
+        lines.append('Select a row to see the full recorded detail.')
+        self.detail.configure(state='normal')
+        self.detail.delete('1.0', 'end')
+        self.detail.insert('1.0', '\n'.join(lines))
+        self.detail.configure(state='disabled')
 
     def show_component(self, _event=None) -> None:
         selection = self.tree.selection()

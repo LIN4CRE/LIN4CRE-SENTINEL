@@ -19,7 +19,7 @@ with zipfile.ZipFile(OUTPUT, 'w', compression=zipfile.ZIP_DEFLATED, compressleve
         if not source.exists():
             continue
         for path in sorted(source.rglob('*')):
-            if not path.is_file() or path.is_symlink() or path.suffix.lower() == '.zip' or any(part in EXCLUDED_PARTS for part in path.relative_to(ROOT).parts):
+            if not path.is_file() or path.is_symlink() or path.suffix.lower() in ('.zip', '.exe') or any(part in EXCLUDED_PARTS for part in path.relative_to(ROOT).parts):
                 continue
             archive.write(path, 'LIN4CRE-SENTINEL/' + str(path.relative_to(ROOT)))
     for name in FILES:

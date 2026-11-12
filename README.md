@@ -10,7 +10,16 @@ It starts with **no programmes, findings, submissions or earnings**. It does not
 
 ## Start on Windows — no command line required
 
-The current release is **[v0.2.1](https://github.com/LIN4CRE/LIN4CRE-SENTINEL/releases/latest)**.
+The current release is **[v0.2.2](https://github.com/LIN4CRE/LIN4CRE-SENTINEL/releases/latest)**.
+
+### One click (recommended)
+
+1. Download `LIN4CRE-SENTINEL-Setup.exe` from the latest release.
+2. Double-click it.
+
+That is the whole setup. The launcher finds an existing SENTINEL installation, or downloads and installs the official release archive into `%LOCALAPPDATA%\LIN4CRE\SENTINEL\app`. It then locates a real Python interpreter — including one that is installed but not on `PATH` — and opens the setup manager. The setup manager starts the private local services, runs a read-only inspection of this PC and opens the operations console in your browser. Nothing is installed or changed without your approval, and Docker/WSL2 are only offered when they are genuinely missing.
+
+### Manual (source package)
 
 1. Download `LIN4CRE-SENTINEL-Windows-Setup.zip` from the latest release or from the running app’s **Maintenance** page.
 2. Extract the whole archive into a permanent folder. Do not run it from inside the ZIP.
@@ -22,7 +31,7 @@ The current release is **[v0.2.1](https://github.com/LIN4CRE/LIN4CRE-SENTINEL/re
 
 The graphical manager starts only loopback services, pairs the host companion, checks real hardware/software/services, offers approved plans, verifies results, creates recovery points and exposes emergency stop. It is an unsigned source package; Windows may show SmartScreen. No purchased signing certificate is included.
 
-**Windows verification (0.2.1):** the 24-test suite, Python compilation, production frontend build and packaged ZIP were verified on Windows 11 with Python 3.12.10. Core and host-companion services, Ollama inspection and recovery-point creation were exercised end to end. Docker Desktop and WSL2 are optional: enabling them requires hardware virtualization in BIOS plus an administrator install and reboot, so setup reports them as unavailable until that is done. See [Windows setup](docs/WINDOWS_SETUP.md) and [Verification](docs/VERIFICATION.md).
+**Windows verification (0.2.2):** the 24-test suite, Python compilation, production frontend build, packaged ZIP and the one-click executable were verified on Windows 11 with Python 3.12.10. Core and host-companion services, Ollama inspection and recovery-point creation were exercised end to end. Docker Desktop and WSL2 are optional: enabling them requires hardware virtualization in BIOS plus an administrator install and reboot, so setup reports them as unavailable until that is done. See [Windows setup](docs/WINDOWS_SETUP.md) and [Verification](docs/VERIFICATION.md).
 
 ## Android companion (preview)
 
