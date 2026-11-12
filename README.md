@@ -10,7 +10,7 @@ It starts with **no programmes, findings, submissions or earnings**. It does not
 
 ## Start on Windows — no command line required
 
-The current release is **[v0.2.2](https://github.com/LIN4CRE/LIN4CRE-SENTINEL/releases/latest)**.
+The current release is **[v0.2.3](https://github.com/LIN4CRE/LIN4CRE-SENTINEL/releases/latest)**.
 
 ### One click (recommended)
 
@@ -31,7 +31,20 @@ That is the whole setup. The launcher finds an existing SENTINEL installation, o
 
 The graphical manager starts only loopback services, pairs the host companion, checks real hardware/software/services, offers approved plans, verifies results, creates recovery points and exposes emergency stop. It is an unsigned source package; Windows may show SmartScreen. No purchased signing certificate is included.
 
-**Windows verification (0.2.2):** the 24-test suite, Python compilation, production frontend build, packaged ZIP and the one-click executable were verified on Windows 11 with Python 3.12.10. Core and host-companion services, Ollama inspection and recovery-point creation were exercised end to end. Docker Desktop and WSL2 are optional: enabling them requires hardware virtualization in BIOS plus an administrator install and reboot, so setup reports them as unavailable until that is done. See [Windows setup](docs/WINDOWS_SETUP.md) and [Verification](docs/VERIFICATION.md).
+**Windows verification (0.2.3):** the 24-test suite, Python compilation, production frontend build, packaged ZIP and the one-click executable were verified on Windows 11 with Python 3.12.10. Core and host-companion services, Ollama inspection and recovery-point creation were exercised end to end. Docker Desktop and WSL2 are optional: enabling them requires hardware virtualization in BIOS plus an administrator install and reboot, so setup reports them as unavailable until that is done. See [Windows setup](docs/WINDOWS_SETUP.md) and [Verification](docs/VERIFICATION.md).
+
+### Update an existing installation
+
+`scripts/Deploy-Sentinel.ps1` deploys a built release over an installation folder and then proves it works:
+
+```powershell
+pwsh -File scripts/Deploy-Sentinel.ps1 `
+  -SourceRoot C:\path\to\LIN4CRE-SENTINEL `
+  -InstallRoot C:\Users\You\LIN4CRE-SENTINEL `
+  -ReportPath C:\Users\You\LIN4CRE-SENTINEL\deployment-report.json
+```
+
+It replaces application code only — the database, recovery points, audit history and settings are left alone, and the existing host-companion pairing is preserved. It restarts the two private services and fails loudly rather than reporting success if either does not answer `operational`. Add `-VerifyOnly` to check an installation without changing it.
 
 ## Android companion (preview)
 
