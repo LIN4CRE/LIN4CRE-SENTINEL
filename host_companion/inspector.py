@@ -281,7 +281,7 @@ def core_components() -> list[dict[str, Any]]:
     core = base_component("sentinel_core")
     root = Path(__file__).resolve().parent.parent
     core["location"] = str(root)
-    core["installed_version"] = "0.2.3"
+    core["installed_version"] = "0.2.4"
     core["functional"] = (root / "backend" / "main.py").exists() and (root / "dist" / "index.html").exists()
     core["status"] = "healthy" if core["functional"] else "verification_failed"
     if not core["functional"]:
@@ -323,13 +323,153 @@ def core_components() -> list[dict[str, Any]]:
     return [core, database, python]
 
 
+def windows_file_version(path: Path) -> str | None:
+    """Read an executable's version from its metadata without running it."""
+    if os.name != "nt":
+        return None
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        class VS_FIXEDFILEINFO(ctypes.Structure):
+            _fields_ = [
+                ("dwSignature", wintypes.DWORD),
+                ("dwStrucVersion", wintypes.DWORD),
+                ("dwFileVersionMS", wintypes.DWORD),
+                ("dwFileVersionLS", wintypes.DWORD),
+                ("dwProductVersionMS", wintypes.DWORD),
+                ("dwProductVersionLS", wintypes.DWORD),
+                ("dwFileFlagsMask", wintypes.DWORD),
+                ("dwFileFlags", wintypes.DWORD),
+                ("dwFileOS", wintypes.DWORD),
+                ("dwFileType", wintypes.DWORD),
+                ("dwFileSubtype", wintypes.DWORD),
+                ("dwFileDateMS", wintypes.DWORD),
+                ("dwFileDateLS", wintypes.DWORD),
+            ]
+
+        size = ctypes.windll.version.GetFileVersionInfoSizeW(str(path), None)
+        if not size:
+            return None
+        buffer = ctypes.create_string_buffer(size)
+        if not ctypes.windll.version.GetFileVersionInfoW(str(path), 0, size, buffer):
+            return None
+        pointer = ctypes.c_void_p()
+        length = wintypes.UINT()
+        if not ctypes.windll.version.VerQueryValueW(buffer, "\\", ctypes.byref(pointer), ctypes.byref(length)):
+            return None
+        info = ctypes.cast(pointer, ctypes.POINTER(VS_FIXEDFILEINFO)).contents
+        major = info.dwFileVersionMS >> 16
+        minor = info.dwFileVersionMS & 0xFFFF
+        build = info.dwFileVersionLS >> 16
+        revision = info.dwFileVersionLS & 0xFFFF
+        return f"{major}.{minor}.{build}.{revision}"
+    except Exception:
+        return None
+
+
+def opencode_candidates() -> list[tuple[str, Path]]:
+    """Every location OpenCode is actually installed in.
+
+    OpenCode ships as a command-line tool and as a desktop application. The
+    desktop application installs itself under the per-user programs folder and
+    keeps its own command-line build in the roaming user-data folder. Neither
+    is added to PATH, so checking PATH alone reported a working installation
+    as missing.
+    """
+    candidates: list[tuple[str, Path]] = []
+    for name in ("opencode", "opencode.cmd", "opencode.exe"):
+        found = shutil.which(name)
+        if found:
+            candidates.append(("command line on PATH", Path(found)))
+    local = os.environ.get("LOCALAPPDATA")
+    roaming = os.environ.get("APPDATA")
+    if local:
+        for folder in ("ai.opencode.desktop", "opencode"):
+            candidates.append(("desktop application", Path(local) / "Programs" / folder / "OpenCode.exe"))
+    if roaming:
+        candidates.append(("npm global command", Path(roaming) / "npm" / "opencode.cmd"))
+        cli_root = Path(roaming) / "ai.opencode.desktop" / "cli"
+        if cli_root.is_dir():
+            try:
+                for child in sorted(cli_root.iterdir(), reverse=True):
+                    candidates.append(("desktop command line", child / "opencode-cli.exe"))
+            except OSError:
+                pass
+    return candidates
+
+
+def opencode_configuration() -> list[dict[str, str]]:
+    """Configuration folders that belong to an OpenCode installation."""
+    folders = []
+    for kind, path in (
+        ("user configuration", Path.home() / ".config" / "opencode"),
+        ("user home", Path.home() / ".opencode"),
+    ):
+        try:
+            if path.is_dir():
+                folders.append({"kind": kind, "path": str(path)})
+        except OSError:
+            continue
+    return folders
+
+
+def opencode_component() -> dict[str, Any]:
+    """Detect OpenCode in every place it can legitimately be installed."""
+    component = base_component("opencode")
+    component["details"] = {"install_kind": None, "configuration": [], "candidates": []}
+    desktop: tuple[str, Path] | None = None
+    for kind, path in opencode_candidates():
+        try:
+            present = path.is_file()
+        except OSError:
+            present = False
+        if not present:
+            continue
+        component["details"]["candidates"].append({"kind": kind, "path": str(path)})
+        if kind == "desktop application":
+            # The desktop application is a graphical program. Running it to
+            # read a version would open a window, so its metadata is read
+            # instead and the command-line build is preferred when present.
+            if desktop is None:
+                desktop = (kind, path)
+            continue
+        version = run_command([str(path), "--version"], timeout=15)
+        component["evidence"].append(version)
+        if version["exit_code"] != 0:
+            component["status"] = "verification_failed"
+            component["error"] = version["stderr"] or "Version command failed"
+            continue
+        output = f"{version['stdout']} {version['stderr']}".strip()
+        match = re.search(r"\d+(?:\.\d+){1,3}(?:[-+][\w.-]+)?", output)
+        component["installed_version"] = match.group(0) if match else None
+        component["location"] = str(path)
+        component["functional"] = True
+        component["status"] = "healthy"
+        component["details"]["install_kind"] = kind
+        break
+    if component["status"] != "healthy" and desktop is not None:
+        kind, path = desktop
+        component["location"] = str(path)
+        component["details"]["install_kind"] = kind
+        component["installed_version"] = windows_file_version(path)
+        component["functional"] = component["installed_version"] is not None
+        component["status"] = "healthy" if component["functional"] else "verification_failed"
+        if not component["functional"]:
+            component["error"] = "The OpenCode desktop application was found but its version could not be read."
+    component["details"]["configuration"] = opencode_configuration()
+    if component["status"] != "healthy" and not component["error"]:
+        component["error"] = "OpenCode was not found on PATH, in the desktop application folder or in the user data folder"
+    return component
+
+
 def inspect_host() -> dict[str, Any]:
     components = [
         *core_components(),
         *docker_components(),
         *windows_components(),
         ollama_component(),
-        command_component("opencode", "opencode", ["--version"], ["--help"]),
+        opencode_component(),
         command_component("node", "node", ["--version"], ["-e", "process.stdout.write('node-ok')"]),
         command_component("npm", "npm.cmd" if os.name == "nt" else "npm", ["--version"]),
         command_component("git", "git", ["--version"], ["--exec-path"]),
