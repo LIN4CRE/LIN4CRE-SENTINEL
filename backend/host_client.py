@@ -2,15 +2,43 @@ from __future__ import annotations
 
 import os
 from typing import Any
+from urllib.parse import urlparse
 
 import httpx
 
 from .db import ROOT, settings
 from .operation_security import authorisation
 
+COMPANION_DEFAULT = "http://host.docker.internal:8765"
+COMPANION_HOSTS = ("localhost", "127.0.0.1", "host.docker.internal")
+COMPANION_PORTS = (None, 8765)
+
 
 class HostUnavailable(RuntimeError):
     pass
+
+
+def companion_base(current: dict[str, Any]) -> str:
+    """Resolve the host companion endpoint for this process.
+
+    The Windows setup manager and the deployment script export
+    ``SENTINEL_HOST_COMPANION_URL`` so the core can reach a companion that runs
+    on the same machine. The override is honoured only while the stored setting
+    still holds the untouched default, and it must satisfy the same loopback-only
+    policy the settings API enforces, so a stray environment value can never
+    redirect host operations to an arbitrary endpoint.
+    """
+    stored = str(current.get("host_companion_url") or COMPANION_DEFAULT).rstrip("/")
+    override = os.getenv("SENTINEL_HOST_COMPANION_URL", "").strip().rstrip("/")
+    if override and stored == COMPANION_DEFAULT:
+        try:
+            parsed = urlparse(override)
+            port = parsed.port
+        except ValueError:
+            return stored
+        if parsed.scheme == "http" and parsed.hostname in COMPANION_HOSTS and port in COMPANION_PORTS:
+            return override
+    return stored
 
 
 def host_token() -> str:
@@ -25,7 +53,7 @@ def host_token() -> str:
 
 async def host_request(conn, method: str, path: str, payload: dict[str, Any] | None = None, timeout: float = 20) -> dict[str, Any]:
     current = settings(conn)
-    base = current.get("host_companion_url", "http://host.docker.internal:8765").rstrip("/")
+    base = companion_base(current)
     token = host_token()
     if not token:
         raise HostUnavailable("The Windows host companion is not paired. Complete SENTINEL Setup to configure its local credentials.")
@@ -45,7 +73,7 @@ async def host_request(conn, method: str, path: str, payload: dict[str, Any] | N
 
 async def host_status(conn) -> dict[str, Any]:
     current = settings(conn)
-    base = current.get("host_companion_url", "http://host.docker.internal:8765").rstrip("/")
+    base = companion_base(current)
     paired = bool(host_token())
     try:
         async with httpx.AsyncClient(timeout=4) as client:

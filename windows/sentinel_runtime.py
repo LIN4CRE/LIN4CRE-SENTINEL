@@ -241,8 +241,12 @@ def extract_release(archive: Path, destination: Path) -> Path:
             if not relative:
                 continue
             target = (destination / relative).resolve()
-            if not str(target).startswith(str(root)):
-                raise RuntimeError('The download contains an unsafe path and was not extracted.')
+            # Containment must be an exact parent check, not a string prefix: a
+            # sibling such as "<root>-evil" would otherwise pass startswith().
+            try:
+                target.relative_to(root)
+            except ValueError as exc:
+                raise RuntimeError('The download contains an unsafe path and was not extracted.') from exc
             if item.is_dir():
                 target.mkdir(parents=True, exist_ok=True)
                 continue

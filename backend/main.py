@@ -789,6 +789,12 @@ if (DIST / "assets").exists():
 
 @app.get("/{full_path:path}", include_in_schema=False)
 def frontend(full_path: str):
+    # The SPA only owns non-API paths. An unmatched /api/... request is a client
+    # error, not a page: answering it with the SPA shell would report a false 200
+    # and hide a genuinely unavailable endpoint (for example the separately
+    # deployed read-only mobile companion app) from API clients.
+    if full_path == "api" or full_path.startswith("api/"):
+        raise HTTPException(404, "API endpoint not found")
     index = DIST / "index.html"
     if not index.exists():
         raise HTTPException(503, "Frontend has not been built. Run npm run build.")
