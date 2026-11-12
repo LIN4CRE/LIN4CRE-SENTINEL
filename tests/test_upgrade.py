@@ -171,8 +171,9 @@ class UpgradeAcceptanceTests(unittest.IsolatedAsyncioTestCase):
         with transaction() as conn:
             conn.execute("UPDATE settings SET value_json='\"after\"' WHERE key='restore_fixture'")
             audit_before = conn.execute('SELECT COUNT(*) FROM audit_log').fetchone()[0]
-        with connect() as conn:
-            result = asyncio.run(operations.run_operation(restore_operation['id']))
+        # The restore replaces the database file, so no connection may be held open here
+        # (Windows raises WinError 32 when renaming a database that is still in use).
+        result = asyncio.run(operations.run_operation(restore_operation['id']))
         with connect() as conn:
             restored = operations.operation(conn, restore_operation['id'])
             self.assertEqual(restored['status'], 'succeeded', restored.get('error'))

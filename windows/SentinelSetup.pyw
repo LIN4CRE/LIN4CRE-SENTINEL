@@ -161,7 +161,7 @@ class SetupWindow(tk.Tk):
         ttk.Label(footer, text='£0 third-party software target  ·  Local services only  ·  Human approval required', style='Muted.TLabel').pack(side='left')
         ttk.Button(footer, text='Close', command=self.close).pack(side='right')
 
-    def run_async(self, description: str, function) -> None:
+    def run_async(self, description: str, function, kind: str = 'done') -> None:
         if self.busy:
             return
         self.busy = True
@@ -169,7 +169,7 @@ class SetupWindow(tk.Tk):
         def work():
             try:
                 result = function()
-                self.events.put(('done', description, result))
+                self.events.put((kind, description, result))
             except Exception as error:
                 self.events.put(('error', description, str(error)))
         threading.Thread(target=work, daemon=True).start()
@@ -229,12 +229,12 @@ class SetupWindow(tk.Tk):
                     raise RuntimeError('Package installation failed; success is not assumed.\n' + (result.stderr or result.stdout)[-3000:])
                 self._start_services()
                 return True
-            self.run_async('Installing the authorised local runtime', install_runtime)
+            self.run_async('Installing the authorised local runtime', install_runtime, 'services')
         else:
             self.start_local_services()
 
     def start_local_services(self) -> None:
-        self.run_async('Starting local services', self._start_services)
+        self.run_async('Starting local services', self._start_services, 'services')
 
     def _start_services(self) -> None:
         config_dir = Path(os.environ.get('LOCALAPPDATA', str(PROJECT / 'data'))) / 'LIN4CRE' / 'SENTINEL'
@@ -245,11 +245,6 @@ class SetupWindow(tk.Tk):
         else:
             token = secrets.token_urlsafe(32)
             token_file.write_text(token, encoding='utf-8')
-            try:
-                import ctypes
-                ctypes.windll.kernel32.SetFileAttributesW(str(token_file), 0x02)
-            except Exception:
-                pass
         if len(token) < 32:
             raise RuntimeError('The local companion token is invalid. Setup stopped without making changes.')
         paired_file = PROJECT / 'host_data' / 'host-token'
