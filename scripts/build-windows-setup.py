@@ -4,7 +4,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT = ROOT / 'public' / 'downloads' / 'LIN4CRE-SENTINEL-Windows-Setup.zip'
-INCLUDE = ['backend', 'host_companion', 'windows', 'dist', 'docs', 'agents', 'config']
+INCLUDE = ['backend', 'host_companion', 'windows', 'scripts', 'dist', 'docs', 'agents', 'config']
 FILES = ['requirements.txt', 'README.md', 'LICENSE', 'SECURITY.md', 'THIRD_PARTY_NOTICES.md', 'CHANGELOG.md', 'SUPPORT.md']
 EXCLUDED_PARTS = {'__pycache__', '.git', 'node_modules', 'data', 'host_data', 'logs', 'runtime'}
 

@@ -245,11 +245,6 @@ class SetupWindow(tk.Tk):
         else:
             token = secrets.token_urlsafe(32)
             token_file.write_text(token, encoding='utf-8')
-            try:
-                import ctypes
-                ctypes.windll.kernel32.SetFileAttributesW(str(token_file), 0x02)
-            except Exception:
-                pass
         if len(token) < 32:
             raise RuntimeError('The local companion token is invalid. Setup stopped without making changes.')
         paired_file = PROJECT / 'host_data' / 'host-token'

@@ -170,7 +170,9 @@ def ports_report() -> list[dict[str, Any]]:
 
 def ollama_component() -> dict[str, Any]:
     component = command_component("ollama", "ollama", ["--version"], ["list"])
-    endpoint = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434").rstrip("/")
+    endpoint = os.getenv("OLLAMA_HOST", "http://127.0.0.1:11434").strip().rstrip("/")
+    if "://" not in endpoint:
+        endpoint = "http://" + endpoint
     models = []
     try:
         response = httpx.get(f"{endpoint}/api/tags", timeout=4)
