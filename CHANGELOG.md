@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.3 — 2026-11-12
+
+### Added
+
+- `scripts/Deploy-Sentinel.ps1` deploys a built release into an installation folder and verifies it. It copies and hash-checks application files, preserves the database, recovery points, audit history and settings, keeps the existing host-companion pairing, restarts the two private services and refuses to report success unless both services answer `operational`.
+- `scripts/Deploy-Sentinel.ps1 -VerifyOnly` checks an existing installation without changing it, and `-ReportPath` writes a JSON deployment record with a SHA-256.
+
+### Verification
+
+24/24 isolated tests pass. The deployment script was exercised against a clean installation folder and against the live installation on Windows 11; the core service and host companion both reported `operational` afterwards and the recorded recovery point remained `verified`.
+
 ## 0.2.2 — 2026-11-12
 
 ### Added
