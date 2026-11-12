@@ -1,4 +1,19 @@
-# Verification record — 11 November 2026
+# Verification record — updated 12 November 2026
+
+## Latest sandbox verification — 12 November 2026
+
+- `.venv/bin/python -m unittest discover -s tests -v`: **24/24 passed** (3 mobile companion, 16 upgrade/security/recovery, 5 workflow/scoring).
+- `.venv/bin/python -m compileall -q backend host_companion windows`: **passed**.
+- `npm ci`: **passed**, 0 vulnerabilities reported by npm during install.
+- `npm run build`: **passed**; TypeScript and Vite production build completed. The build now packages the Windows setup archive after the frontend is built and copies the final archive into both `public/downloads/` and `dist/downloads/`.
+- Generated archive inspection: **54 entries**; includes the built frontend and setup entry point, and contains no SQLite database.
+- `npm audit --omit=dev`: **0 vulnerabilities**.
+- Python checks ran on Python 3.11.2 (the documented minimum is Python 3.12); the JavaScript build ran on Node 22.22.3 (the documented target is Node 20).
+- Chromium browser QA was **not rerun**: this sandbox has no Chromium executable or Playwright installation. The 11-route/390 px browser results below are from the prior recorded run, not this verification.
+- Android APK build was **not possible locally**: no JDK or Android SDK is installed. GitHub Android CI and CI runs for `main` are failed before any job steps because the account is locked due to a billing issue. The Android release workflow dispatch was attempted, but GitHub returned HTTP 403 `Resource not accessible by integration`. There is **no Android APK release asset**; the only published `v0.2.0` assets are Windows installers.
+- No Vercel project is configured for SENTINEL, and no Supabase project is used by the app. SENTINEL is designed as a local-first SQLite application; connecting an unrelated account/project would introduce an unnecessary remote data dependency.
+
+## Prior verification record — 11 November 2026
 
 ## Automated results
 

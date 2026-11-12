@@ -111,7 +111,7 @@ python -m compileall -q backend host_companion windows
 npm run build
 ```
 
-The final isolated suite contains **21 tests**, covering the milestone-one research workflow and upgrade security/recovery paths. Browser QA covers all 11 routes, real assistant responses and 390 px mobile layouts. Exact results and limitations are recorded in [docs/VERIFICATION.md](docs/VERIFICATION.md).
+The isolated suite contains **24 tests**, covering the mobile companion, research workflow, and upgrade security/recovery paths. Browser QA has previously covered all 11 routes, real assistant responses and 390 px mobile layouts; the current sandbox has no Chromium runtime to repeat that browser run. Exact latest results and limitations are recorded in [docs/VERIFICATION.md](docs/VERIFICATION.md).
 
 ## Costs
 

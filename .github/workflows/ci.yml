@@ -33,6 +33,21 @@ jobs:
         run: npm ci
       - name: Production build and Windows setup package
         run: npm run build
+      - name: Validate generated Windows setup package
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+
+          archive_path = Path('dist/downloads/LIN4CRE-SENTINEL-Windows-Setup.zip')
+          assert archive_path.is_file(), f'missing packaged download: {archive_path}'
+          with ZipFile(archive_path) as archive:
+              names = set(archive.namelist())
+          assert 'LIN4CRE-SENTINEL/dist/index.html' in names, 'built frontend missing from setup archive'
+          assert 'LIN4CRE-SENTINEL/windows/SentinelSetup.cmd' in names, 'Windows setup entry point missing'
+          assert not any(name.endswith(('.db', '.db-wal', '.db-shm')) for name in names), 'runtime database leaked into archive'
+          print(f'Validated {archive_path}: {len(names)} entries')
+          PY
       - name: Check for accidentally tracked runtime secrets/data
         run: |
           ! git ls-files | grep -E '(^|/)(\.env|host-data|host_data|sentinel\.db|host-token)$'
