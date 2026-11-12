@@ -51,7 +51,7 @@ async def lifespan(_app: FastAPI):
             pass
 
 
-app = FastAPI(title="LIN4CRE SENTINEL", version="0.2.0", docs_url="/api/docs", lifespan=lifespan)
+app = FastAPI(title="LIN4CRE SENTINEL", version="0.2.1", docs_url="/api/docs", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],

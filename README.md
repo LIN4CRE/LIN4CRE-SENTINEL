@@ -10,17 +10,19 @@ It starts with **no programmes, findings, submissions or earnings**. It does not
 
 ## Start on Windows — no command line required
 
-1. Download `LIN4CRE-SENTINEL-Windows-Setup.zip` from a release or from the running app’s **Maintenance** page.
+The current release is **[v0.2.1](https://github.com/LIN4CRE/LIN4CRE-SENTINEL/releases/latest)**.
+
+1. Download `LIN4CRE-SENTINEL-Windows-Setup.zip` from the latest release or from the running app’s **Maintenance** page.
 2. Extract the whole archive into a permanent folder. Do not run it from inside the ZIP.
 3. Open `windows/SentinelSetup.cmd`.
 4. If Python is missing, the native setup window explains the official package and asks before using Windows Package Manager.
-5. Select **Inspect this PC**. Inspection is read-only.
+5. Select **Inspect this PC**. Inspection is read-only and runs automatically once the local services are up.
 6. Choose components, review the exact plan and approve only what you want.
 7. Save the actual installation report, including any failures or unavailable checks.
 
 The graphical manager starts only loopback services, pairs the host companion, checks real hardware/software/services, offers approved plans, verifies results, creates recovery points and exposes emergency stop. It is an unsigned source package; Windows may show SmartScreen. No purchased signing certificate is included.
 
-**Windows-specific installation success has not been verified by the build environment.** See [Windows setup](docs/WINDOWS_SETUP.md) and [Verification](docs/VERIFICATION.md).
+**Windows verification (0.2.1):** the 24-test suite, Python compilation, production frontend build and packaged ZIP were verified on Windows 11 with Python 3.12.10. Core and host-companion services, Ollama inspection and recovery-point creation were exercised end to end. Docker Desktop and WSL2 are optional: enabling them requires hardware virtualization in BIOS plus an administrator install and reboot, so setup reports them as unavailable until that is done. See [Windows setup](docs/WINDOWS_SETUP.md) and [Verification](docs/VERIFICATION.md).
 
 ## Android companion (preview)
 

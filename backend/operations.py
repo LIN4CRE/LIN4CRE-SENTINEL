@@ -465,7 +465,7 @@ async def installation_report():
     return {
         "schema": "lin4cre.sentinel.installation-report/v1",
         "generated_at": utcnow(),
-        "application_version": "0.2.0",
+        "application_version": "0.2.1",
         "inspection": current,
         "operations": operations,
         "latest_verified_recovery": decode(latest_recovery),
