@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.4 — 2026-11-12
+
+### Added
+
+- `windows/Install-Sentinel.cmd` performs the complete one-click setup using only tools that ship with Windows. It finds an existing installation, downloads and extracts the official release when one is missing, locates a real Python interpreter and opens the graphical setup manager. It is published as `LIN4CRE-SENTINEL-Setup.cmd`.
+
+### Fixed
+
+- **Smart App Control no longer blocks setup.** Windows 11 Smart App Control refuses to run a newly built unsigned executable until it accumulates a reputation, which produced "An Application Control policy has blocked this file" for the one-click setup application. The command launcher is not subject to executable reputation, so the one-click flow now works on every machine, including those with Smart App Control enabled.
+- **OpenCode is detected where it is actually installed.** The host inspection only searched `PATH`, so the OpenCode desktop application and the command-line build it keeps in the user-data folder were reported as "not installed" and "not configured". The inspection now checks the desktop application folder, the bundled command-line build, the npm global command and `PATH`, and reads the application version from its metadata without launching a window. The configuration folder is recorded as well.
+
+### Verification
+
+29/29 isolated tests pass, including five new OpenCode detection tests. The command launcher was exercised on Windows 11 in an isolated profile and local-app-data folder: it downloaded the published release, extracted it, found the interpreter and started both services, which reported `operational` at version `0.2.4`. It was also exercised against the existing installation, where it opened the setup assistant without downloading anything. A live inspection of the validation PC now reports OpenCode as healthy at version 2.2.5, installed as the desktop application.
+
 ## 0.2.3 — 2026-11-12
 
 ### Added

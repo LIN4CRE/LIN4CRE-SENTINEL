@@ -19,6 +19,7 @@ logs/
 *.tsbuildinfo
 public/downloads/*.zip
 public/downloads/*.exe
+public/downloads/*.cmd
 build/
 *.spec
 .DS_Store

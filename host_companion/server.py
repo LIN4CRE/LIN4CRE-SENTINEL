@@ -23,7 +23,7 @@ HOST_DATA = Path(os.getenv("SENTINEL_HOST_DATA_DIR", ROOT / "host_data"))
 TOKEN_FILE = HOST_DATA / "host-token"
 NONCE_FILE = HOST_DATA / "used-operations.json"
 REPLAY_LOCK = threading.Lock()
-app = FastAPI(title="SENTINEL Host Companion", version="0.2.3", docs_url=None, redoc_url=None)
+app = FastAPI(title="SENTINEL Host Companion", version="0.2.4", docs_url=None, redoc_url=None)
 
 
 def token() -> str:

@@ -1,6 +1,21 @@
 # Verification record — updated 12 November 2026
 
-## Latest Windows 11 verification — 12 November 2026 (release 0.2.2)
+## Latest Windows 11 verification — 12 November 2026 (release 0.2.4)
+
+- Host: Windows 11, Python 3.12.10, Node.js 26.7.0, npm 11.19.0, Git for Windows 2.48.1, Ollama 0.40.16, OpenCode 2.2.5.
+- `python -m unittest discover -s tests`: **29/29 passed**, including five new OpenCode detection tests.
+- `python -m compileall -q backend host_companion windows`: **passed**.
+- `npm run build`: **passed**; the production frontend was built and the Windows setup archive rebuilt.
+- `scripts/build-setup-exe.py`: **passed**; the standalone setup executable and the command launcher were rebuilt.
+- **OpenCode detection fixed and re-verified.** The inspection previously searched only `PATH` and reported the OpenCode desktop application as "not installed / not configured". It now finds the desktop application folder, the command-line build inside the user-data folder, the npm global command and `PATH`. A live inspection of this PC reports OpenCode as `healthy` at version `2.2.5`, installed as the desktop application, with the user configuration folder recorded. The desktop application is never launched to read its version; the version is read from its metadata.
+- **Command launcher verified on a clean profile.** `LIN4CRE-SENTINEL-Setup.cmd` was run with an isolated user profile and local-app-data folder: it downloaded the published release, extracted it, located the interpreter and started both services, which reported `operational`. It was also run against the existing installation, where it opened the setup assistant without downloading anything.
+- **Smart App Control observed.** Smart App Control is enabled on this PC (`VerifiedAndReputablePolicyState: 1`) and refuses to run a newly built unsigned executable until it has accumulated a reputation. A rebuilt setup executable was blocked with "An Application Control policy has blocked this file" while an earlier build of the same launcher still ran. The command launcher is not subject to executable reputation and is therefore the recommended download.
+- **Deployment script verified.** `scripts/Deploy-Sentinel.ps1` copied and hash-verified 66 files into a clean folder and over the live installation, and both services reported `operational` afterwards. The existing verified recovery point and the settings were preserved.
+- The existing verified recovery point `20261112-7b6b0814fcf4` survived the upgrade and remained `verified`.
+- Chromium QA was **not rerun** as an automated run: there is no local Chromium/Playwright harness. The console was opened and inspected manually in Chrome at `127.0.0.1:8000`.
+- The Android APK is still **not built**: no JDK or Android SDK is available. GitHub CI for `main` still fails before any job step because the account is locked for billing, which is unrelated to this code.
+
+## Prior Windows 11 verification — 12 November 2026 (release 0.2.2)
 
 - Host: Windows 11, Python 3.12.10, Node.js 26.7.0, npm 11.19.0, Git for Windows 2.48.1, Ollama 0.40.16.
 - `python -m unittest discover -s tests`: **24/24 passed**.

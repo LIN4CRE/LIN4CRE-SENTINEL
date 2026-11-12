@@ -8,10 +8,12 @@ This path is for users who do not want to write PowerShell, Python, JavaScript, 
 
 ### One click (recommended)
 
-1. Obtain `LIN4CRE-SENTINEL-Setup.exe` from the project release.
+1. Obtain `LIN4CRE-SENTINEL-Setup.cmd` from the project release.
 2. Double-click it.
 
 The launcher finds an existing SENTINEL installation, or downloads and installs the official release archive into `%LOCALAPPDATA%\LIN4CRE\SENTINEL\app`. It then locates a real Python interpreter — including one that is installed but not on `PATH` — and opens the setup manager. The setup manager starts the private local services, runs a read-only inspection of this PC and opens the operations console at `http://127.0.0.1:8000`. Nothing is installed or changed without your approval.
+
+`LIN4CRE-SENTINEL-Setup.exe` provides the same flow as a single application file and needs no Python on the machine. Windows 11 **Smart App Control** refuses to run a newly published unsigned executable until it has accumulated a reputation, which appears as "An Application Control policy has blocked this file". A command launcher is not subject to executable reputation, so use `LIN4CRE-SENTINEL-Setup.cmd` when the executable is blocked.
 
 ### Manual (source package)
 

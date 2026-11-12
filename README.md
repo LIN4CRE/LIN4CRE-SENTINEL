@@ -10,14 +10,16 @@ It starts with **no programmes, findings, submissions or earnings**. It does not
 
 ## Start on Windows — no command line required
 
-The current release is **[v0.2.3](https://github.com/LIN4CRE/LIN4CRE-SENTINEL/releases/latest)**.
+The current release is **[v0.2.4](https://github.com/LIN4CRE/LIN4CRE-SENTINEL/releases/latest)**.
 
 ### One click (recommended)
 
-1. Download `LIN4CRE-SENTINEL-Setup.exe` from the latest release.
+1. Download `LIN4CRE-SENTINEL-Setup.cmd` from the latest release.
 2. Double-click it.
 
 That is the whole setup. The launcher finds an existing SENTINEL installation, or downloads and installs the official release archive into `%LOCALAPPDATA%\LIN4CRE\SENTINEL\app`. It then locates a real Python interpreter — including one that is installed but not on `PATH` — and opens the setup manager. The setup manager starts the private local services, runs a read-only inspection of this PC and opens the operations console in your browser. Nothing is installed or changed without your approval, and Docker/WSL2 are only offered when they are genuinely missing.
+
+`LIN4CRE-SENTINEL-Setup.exe` is the same flow as a single application file and needs no Python on the machine. Use it when Windows allows it: **Smart App Control refuses to run a newly published unsigned executable until it has earned a reputation**, which shows as "An Application Control policy has blocked this file". The command launcher is not subject to executable reputation and therefore works on every machine, so prefer it if the executable is blocked.
 
 ### Manual (source package)
 
@@ -31,7 +33,7 @@ That is the whole setup. The launcher finds an existing SENTINEL installation, o
 
 The graphical manager starts only loopback services, pairs the host companion, checks real hardware/software/services, offers approved plans, verifies results, creates recovery points and exposes emergency stop. It is an unsigned source package; Windows may show SmartScreen. No purchased signing certificate is included.
 
-**Windows verification (0.2.3):** the 24-test suite, Python compilation, production frontend build, packaged ZIP and the one-click executable were verified on Windows 11 with Python 3.12.10. Core and host-companion services, Ollama inspection and recovery-point creation were exercised end to end. Docker Desktop and WSL2 are optional: enabling them requires hardware virtualization in BIOS plus an administrator install and reboot, so setup reports them as unavailable until that is done. See [Windows setup](docs/WINDOWS_SETUP.md) and [Verification](docs/VERIFICATION.md).
+**Windows verification (0.2.4):** the 24-test suite, Python compilation, production frontend build, packaged ZIP and both launchers were verified on Windows 11 with Python 3.12.10. Core and host-companion services, Ollama inspection and recovery-point creation were exercised end to end. Docker Desktop and WSL2 are optional: enabling them requires hardware virtualization in BIOS plus an administrator install and reboot, so setup reports them as unavailable until that is done. See [Windows setup](docs/WINDOWS_SETUP.md) and [Verification](docs/VERIFICATION.md).
 
 ### Update an existing installation
 
